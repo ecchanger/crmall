@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.macro.mall.mapper.PmsProductInventoryLogMapper">
+  <resultMap id="BaseResultMap" type="com.macro.mall.model.PmsProductInventoryLog">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="sku_id" jdbcType="BIGINT" property="skuId" />
+    <result column="before_stock" jdbcType="INTEGER" property="beforeStock" />
+    <result column="after_stock" jdbcType="INTEGER" property="afterStock" />
+    <result column="change_stock" jdbcType="INTEGER" property="changeStock" />
+    <result column="operate_type" jdbcType="INTEGER" property="operateType" />
+    <result column="operate_man" jdbcType="VARCHAR" property="operateMan" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, product_id, sku_id, before_stock, after_stock, change_stock, operate_type, operate_man, 
+    note, create_time
+  </sql>
+  <select id="selectByExample" parameterType="com.macro.mall.model.PmsProductInventoryLogExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from pms_product_inventory_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from pms_product_inventory_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from pms_product_inventory_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.macro.mall.model.PmsProductInventoryLogExample">
+    delete from pms_product_inventory_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.macro.mall.model.PmsProductInventoryLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into pms_product_inventory_log (product_id, sku_id, before_stock, 
+      after_stock, change_stock, operate_type, 
+      operate_man, note, create_time
+      )
+    values (#{productId,jdbcType=BIGINT}, #{skuId,jdbcType=BIGINT}, #{beforeStock,jdbcType=INTEGER}, 
+      #{afterStock,jdbcType=INTEGER}, #{changeStock,jdbcType=INTEGER}, #{operateType,jdbcType=INTEGER}, 
+      #{operateMan,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.macro.mall.model.PmsProductInventoryLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into pms_product_inventory_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        product_id,
+      </if>
+      <if test="skuId != null">
+        sku_id,
+      </if>
+      <if test="beforeStock != null">
+        before_stock,
+      </if>
+      <if test="afterStock != null">
+        after_stock,
+      </if>
+      <if test="changeStock != null">
+        change_stock,
+      </if>
+      <if test="operateType != null">
+        operate_type,
+      </if>
+      <if test="operateMan != null">
+        operate_man,
+      </if>
+      <if test="note != null">
+        note,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="skuId != null">
+        #{skuId,jdbcType=BIGINT},
+      </if>
+      <if test="beforeStock != null">
+        #{beforeStock,jdbcType=INTEGER},
+      </if>
+      <if test="afterStock != null">
+        #{afterStock,jdbcType=INTEGER},
+      </if>
+      <if test="changeStock != null">
+        #{changeStock,jdbcType=INTEGER},
+      </if>
+      <if test="operateType != null">
+        #{operateType,jdbcType=INTEGER},
+      </if>
+      <if test="operateMan != null">
+        #{operateMan,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null">
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.macro.mall.model.PmsProductInventoryLogExample" resultType="java.lang.Long">
+    select count(*) from pms_product_inventory_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update pms_product_inventory_log
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.productId != null">
+        product_id = #{record.productId,jdbcType=BIGINT},
+      </if>
+      <if test="record.skuId != null">
+        sku_id = #{record.skuId,jdbcType=BIGINT},
+      </if>
+      <if test="record.beforeStock != null">
+        before_stock = #{record.beforeStock,jdbcType=INTEGER},
+      </if>
+      <if test="record.afterStock != null">
+        after_stock = #{record.afterStock,jdbcType=INTEGER},
+      </if>
+      <if test="record.changeStock != null">
+        change_stock = #{record.changeStock,jdbcType=INTEGER},
+      </if>
+      <if test="record.operateType != null">
+        operate_type = #{record.operateType,jdbcType=INTEGER},
+      </if>
+      <if test="record.operateMan != null">
+        operate_man = #{record.operateMan,jdbcType=VARCHAR},
+      </if>
+      <if test="record.note != null">
+        note = #{record.note,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update pms_product_inventory_log
+    set id = #{record.id,jdbcType=BIGINT},
+      product_id = #{record.productId,jdbcType=BIGINT},
+      sku_id = #{record.skuId,jdbcType=BIGINT},
+      before_stock = #{record.beforeStock,jdbcType=INTEGER},
+      after_stock = #{record.afterStock,jdbcType=INTEGER},
+      change_stock = #{record.changeStock,jdbcType=INTEGER},
+      operate_type = #{record.operateType,jdbcType=INTEGER},
+      operate_man = #{record.operateMan,jdbcType=VARCHAR},
+      note = #{record.note,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.macro.mall.model.PmsProductInventoryLog">
+    update pms_product_inventory_log
+    <set>
+      <if test="productId != null">
+        product_id = #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="skuId != null">
+        sku_id = #{skuId,jdbcType=BIGINT},
+      </if>
+      <if test="beforeStock != null">
+        before_stock = #{beforeStock,jdbcType=INTEGER},
+      </if>
+      <if test="afterStock != null">
+        after_stock = #{afterStock,jdbcType=INTEGER},
+      </if>
+      <if test="changeStock != null">
+        change_stock = #{changeStock,jdbcType=INTEGER},
+      </if>
+      <if test="operateType != null">
+        operate_type = #{operateType,jdbcType=INTEGER},
+      </if>
+      <if test="operateMan != null">
+        operate_man = #{operateMan,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null">
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.macro.mall.model.PmsProductInventoryLog">
+    update pms_product_inventory_log
+    set product_id = #{productId,jdbcType=BIGINT},
+      sku_id = #{skuId,jdbcType=BIGINT},
+      before_stock = #{beforeStock,jdbcType=INTEGER},
+      after_stock = #{afterStock,jdbcType=INTEGER},
+      change_stock = #{changeStock,jdbcType=INTEGER},
+      operate_type = #{operateType,jdbcType=INTEGER},
+      operate_man = #{operateMan,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
