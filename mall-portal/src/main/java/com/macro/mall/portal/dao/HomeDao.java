@@ -38,3 +38,4 @@ public interface HomeDao {
      */
     List<CmsSubject> getRecommendSubjectList(@Param("offset") Integer offset, @Param("limit") Integer limit);
 }
+// Adding a comment for dummy PR
