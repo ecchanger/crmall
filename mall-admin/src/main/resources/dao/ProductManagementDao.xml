@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.macro.mall.dao.ProductManagementDao">
+    
+    <resultMap id="ProductManagementResultMap" type="com.macro.mall.dto.ProductManagementResult">
+        <id column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="management_status" property="managementStatus"/>
+        <result column="priority" property="priority"/>
+        <result column="assignee" property="assignee"/>
+        <result column="expected_completion_time" property="expectedCompletionTime"/>
+        <result column="actual_completion_time" property="actualCompletionTime"/>
+        <result column="management_notes" property="managementNotes"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_sn" property="productSn"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="category_name" property="categoryName"/>
+    </resultMap>
+
+    <select id="getManagementList" resultMap="ProductManagementResultMap">
+        SELECT 
+            pm.id,
+            pm.product_id,
+            pm.management_status,
+            pm.priority,
+            pm.assignee,
+            pm.expected_completion_time,
+            pm.actual_completion_time,
+            pm.management_notes,
+            pm.create_time,
+            pm.update_time,
+            p.name as product_name,
+            p.product_sn,
+            b.name as brand_name,
+            pc.name as category_name
+        FROM product_management pm
+        LEFT JOIN pms_product p ON pm.product_id = p.id
+        LEFT JOIN pms_brand b ON p.brand_id = b.id
+        LEFT JOIN pms_product_category pc ON p.product_category_id = pc.id
+        <where>
+            <if test="param.productId != null">
+                AND pm.product_id = #{param.productId}
+            </if>
+            <if test="param.managementStatus != null">
+                AND pm.management_status = #{param.managementStatus}
+            </if>
+            <if test="param.priority != null">
+                AND pm.priority = #{param.priority}
+            </if>
+            <if test="param.assignee != null and param.assignee != ''">
+                AND pm.assignee = #{param.assignee}
+            </if>
+            <if test="param.startTime != null">
+                AND pm.create_time >= #{param.startTime}
+            </if>
+            <if test="param.endTime != null">
+                AND pm.create_time &lt;= #{param.endTime}
+            </if>
+            <if test="param.keyword != null and param.keyword != ''">
+                AND (p.name LIKE CONCAT('%', #{param.keyword}, '%') 
+                     OR p.product_sn LIKE CONCAT('%', #{param.keyword}, '%')
+                     OR pm.management_notes LIKE CONCAT('%', #{param.keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY pm.priority DESC, pm.create_time DESC
+    </select>
+
+    <select id="getDashboardData" resultType="com.macro.mall.dto.ProductManagementDashboard">
+        SELECT 
+            SUM(CASE WHEN management_status = 0 THEN 1 ELSE 0 END) as pendingCount,
+            SUM(CASE WHEN management_status = 1 THEN 1 ELSE 0 END) as processingCount,
+            SUM(CASE WHEN management_status = 2 THEN 1 ELSE 0 END) as completedCount,
+            SUM(CASE WHEN management_status != 2 AND expected_completion_time &lt; NOW() THEN 1 ELSE 0 END) as overdueCount,
+            SUM(CASE WHEN priority = 3 THEN 1 ELSE 0 END) as highPriorityCount,
+            SUM(CASE WHEN priority = 4 THEN 1 ELSE 0 END) as urgentCount,
+            SUM(CASE WHEN management_status = 2 AND actual_completion_time >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) as weeklyCompletedCount,
+            SUM(CASE WHEN management_status = 2 AND actual_completion_time >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as monthlyCompletedCount
+        FROM product_management
+        <where>
+            <if test="assignee != null and assignee != ''">
+                assignee = #{assignee}
+            </if>
+        </where>
+    </select>
+
+    <select id="getOverdueItems" resultType="com.macro.mall.model.ProductManagement">
+        SELECT * FROM product_management 
+        WHERE management_status != 2 
+        AND expected_completion_time &lt; NOW()
+        ORDER BY expected_completion_time ASC
+    </select>
+
+    <update id="batchUpdateStatus">
+        UPDATE product_management 
+        SET management_status = #{status}, update_time = NOW()
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="batchUpdateAssignee">
+        UPDATE product_management 
+        SET assignee = #{assignee}, update_time = NOW()
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="batchUpdatePriority">
+        UPDATE product_management 
+        SET priority = #{priority}, update_time = NOW()
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <insert id="insertProductManagement" parameterType="com.macro.mall.model.ProductManagement" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO product_management (
+            product_id,
+            management_status,
+            priority,
+            assignee,
+            expected_completion_time,
+            actual_completion_time,
+            management_notes,
+            create_time,
+            update_time
+        ) VALUES (
+            #{productId},
+            #{managementStatus},
+            #{priority},
+            #{assignee},
+            #{expectedCompletionTime},
+            #{actualCompletionTime},
+            #{managementNotes},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <update id="updateProductManagement" parameterType="com.macro.mall.model.ProductManagement">
+        UPDATE product_management
+        SET 
+            product_id = #{productId},
+            management_status = #{managementStatus},
+            priority = #{priority},
+            assignee = #{assignee},
+            expected_completion_time = #{expectedCompletionTime},
+            actual_completion_time = #{actualCompletionTime},
+            management_notes = #{managementNotes},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="getById" resultMap="ProductManagementResultMap">
+        SELECT 
+            pm.id,
+            pm.product_id,
+            pm.management_status,
+            pm.priority,
+            pm.assignee,
+            pm.expected_completion_time,
+            pm.actual_completion_time,
+            pm.management_notes,
+            pm.create_time,
+            pm.update_time,
+            p.name as product_name,
+            p.product_sn,
+            b.name as brand_name,
+            pc.name as category_name
+        FROM product_management pm
+        LEFT JOIN pms_product p ON pm.product_id = p.id
+        LEFT JOIN pms_brand b ON p.brand_id = b.id
+        LEFT JOIN pms_product_category pc ON p.product_category_id = pc.id
+        WHERE pm.id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM product_management WHERE id = #{id}
+    </delete>
+
+</mapper>
