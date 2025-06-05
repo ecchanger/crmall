@@ -1,0 +1,136 @@
+// 全局样式
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+// 自定义样式
+.app-container {
+  padding: 20px;
+}
+
+.filter-container {
+  padding-bottom: 10px;
+  
+  .filter-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 10px;
+    margin-right: 10px;
+  }
+}
+
+.pagination-container {
+  margin-top: 30px;
+  text-align: right;
+}
+
+// 表格样式
+.table-expand {
+  .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+}
+
+// 上传组件样式
+.upload-container {
+  .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    
+    &:hover {
+      border-color: #409eff;
+    }
+  }
+  
+  .upload-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  
+  .upload-img {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+}
+
+// 富文本编辑器样式
+.editor-container {
+  min-height: 300px;
+  
+  .ql-editor {
+    min-height: 300px;
+  }
+}
+
+// 状态标签样式
+.status-tag {
+  .el-tag {
+    margin-right: 8px;
+  }
+}
+
+// 操作按钮样式
+.table-operations {
+  .el-button {
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+// 表单样式
+.form-container {
+  .el-form {
+    max-width: 800px;
+  }
+  
+  .el-form-item__label {
+    font-weight: bold;
+  }
+}
+
+// 卡片样式
+.card-container {
+  .el-card {
+    margin-bottom: 20px;
+  }
+}
+
+// 响应式
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+  
+  .filter-container {
+    .filter-item {
+      display: block;
+      margin-right: 0;
+    }
+  }
+  
+  .table-operations {
+    .el-button {
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+  }
+}

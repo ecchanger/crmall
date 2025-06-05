@@ -209,3 +209,304 @@ Copyright (c) 2018-2025 macrozheng
 
 
 ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/ecchanger/mall?utm_source=oss&utm_medium=github&utm_campaign=ecchanger%2Fmall&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
+# 商城后台管理系统
+
+一套完整的商品管理后台系统，基于 Spring Boot + Vue 3 + Element Plus 构建。
+
+## 📋 系统概述
+
+本系统是一个功能完善的商城后台管理系统，主要用于商品信息的管理和维护。系统采用前后端分离架构，提供了完整的商品管理解决方案。
+
+## 🏗️ 系统架构
+
+### 后端技术栈
+- **Spring Boot 2.7.5** - 核心框架
+- **MyBatis** - ORM 框架
+- **MySQL** - 数据库
+- **Redis** - 缓存
+- **JWT** - 认证授权
+- **Swagger** - API 文档
+- **Maven** - 依赖管理
+
+### 前端技术栈
+- **Vue 3** - 前端框架
+- **Element Plus** - UI 组件库
+- **Vue Router** - 路由管理
+- **Pinia** - 状态管理
+- **Axios** - HTTP 客户端
+- **ECharts** - 数据可视化
+- **Vite** - 构建工具
+
+## 🚀 功能特性
+
+### 1. 商品管理
+- ✅ 商品列表展示（分页、搜索、筛选）
+- ✅ 商品新增、编辑、删除
+- ✅ 商品批量操作（上架、下架、删除）
+- ✅ 商品状态管理（审核、推荐、新品）
+- ✅ 商品图片管理
+- ✅ SKU 库存管理
+
+### 2. 分类管理
+- ✅ 商品分类树形展示
+- ✅ 分类增删改查
+- ✅ 多级分类支持
+
+### 3. 品牌管理
+- ✅ 品牌信息管理
+- ✅ 品牌图标上传
+
+### 4. 属性管理
+- ✅ 商品属性定义
+- ✅ 属性分类管理
+- ✅ 规格参数配置
+
+### 5. 订单管理
+- ✅ 订单列表查看
+- ✅ 订单状态管理
+- ✅ 退货申请处理
+
+### 6. 营销管理
+- ✅ 优惠券管理
+- ✅ 限时购活动
+- ✅ 首页推荐配置
+
+### 7. 用户权限
+- ✅ 管理员登录
+- ✅ 角色权限管理
+- ✅ 菜单权限控制
+
+### 8. 数据统计
+- ✅ 商品数据统计
+- ✅ 销售趋势图表
+- ✅ 实时数据监控
+
+## 📁 项目结构
+
+```
+mall/
+├── mall-admin/                 # 后台管理模块
+│   ├── src/main/java/
+│   │   └── com/macro/mall/
+│   │       ├── controller/     # 控制器层
+│   │       ├── service/        # 服务层
+│   │       ├── dao/           # 数据访问层
+│   │       ├── dto/           # 数据传输对象
+│   │       ├── bo/            # 业务对象
+│   │       └── config/        # 配置类
+│   └── src/main/resources/    # 配置文件
+├── mall-common/               # 公共模块
+├── mall-mbg/                  # MyBatis Generator
+├── mall-security/             # 安全模块
+├── mall-portal/               # 前台门户
+├── mall-search/               # 搜索模块
+└── mall-admin-frontend/       # 前端管理界面
+    ├── src/
+    │   ├── api/              # API 接口
+    │   ├── components/       # 公共组件
+    │   ├── layout/           # 布局组件
+    │   ├── router/           # 路由配置
+    │   ├── stores/           # 状态管理
+    │   ├── styles/           # 样式文件
+    │   └── views/            # 页面组件
+    │       ├── dashboard/    # 仪表盘
+    │       ├── login/        # 登录页
+    │       ├── product/      # 商品管理
+    │       └── order/        # 订单管理
+    ├── package.json
+    └── vite.config.js
+```
+
+## 🛠️ 快速开始
+
+### 环境要求
+- JDK 1.8+
+- Maven 3.6+
+- MySQL 5.7+
+- Redis 3.0+
+- Node.js 16+
+
+### 后端启动
+
+1. **克隆项目**
+```bash
+git clone <repository-url>
+cd mall
+```
+
+2. **配置数据库**
+```bash
+# 创建数据库
+mysql -u root -p
+CREATE DATABASE mall DEFAULT CHARACTER SET utf8mb4;
+
+# 导入数据库结构和数据
+# 请在 document/sql 目录下找到相应的 SQL 文件
+```
+
+3. **修改配置**
+```yaml
+# 编辑 mall-admin/src/main/resources/application-dev.yml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mall?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: your_username
+    password: your_password
+```
+
+4. **启动服务**
+```bash
+# 编译项目
+mvn clean install
+
+# 启动后台管理服务
+cd mall-admin
+mvn spring-boot:run
+```
+
+后端服务将在 `http://localhost:8080` 启动
+
+### 前端启动
+
+1. **安装依赖**
+```bash
+cd mall-admin-frontend
+npm install
+```
+
+2. **启动开发服务器**
+```bash
+npm run dev
+```
+
+前端服务将在 `http://localhost:3000` 启动
+
+### 默认账号
+- 用户名：`admin`
+- 密码：`123456`
+
+## 📱 系统截图
+
+### 登录页面
+- 简洁现代的登录界面
+- 响应式设计，支持多设备访问
+
+### 仪表盘
+- 数据统计卡片展示
+- 销售趋势图表
+- 商品分类占比
+- 最新商品和热销商品列表
+
+### 商品列表
+- 多条件搜索筛选
+- 表格形式展示商品信息
+- 批量操作功能
+- 分页和排序
+
+### 商品编辑
+- 丰富的表单组件
+- 图片上传功能
+- 富文本编辑器
+- 规格参数配置
+
+## 🔧 核心功能说明
+
+### 1. 商品管理
+商品管理是系统的核心功能，包括：
+
+**商品列表**
+- 支持按商品名称、货号、分类、品牌等条件筛选
+- 表格展示商品图片、名称、价格、库存、销量等信息
+- 支持批量上架、下架、删除操作
+- 实时切换商品上架状态
+
+**商品编辑**
+- 基本信息：名称、副标题、描述、货号等
+- 价格库存：价格、库存数量、销量等
+- 商品图片：主图和轮播图上传
+- 规格参数：SKU 管理和属性配置
+- 营销设置：是否推荐、新品、热销等
+
+### 2. 分类管理
+- 树形结构展示商品分类
+- 支持多级分类
+- 分类图标和描述管理
+
+### 3. 品牌管理
+- 品牌信息的增删改查
+- 品牌 Logo 上传
+- 品牌故事和描述
+
+### 4. 用户权限
+- 基于 JWT 的认证机制
+- 角色和权限管理
+- 菜单级别的权限控制
+
+## 🚀 部署说明
+
+### Docker 部署
+
+1. **构建镜像**
+```bash
+# 后端
+mvn clean package docker:build
+
+# 前端
+docker build -t mall-admin-frontend .
+```
+
+2. **运行容器**
+```bash
+docker-compose up -d
+```
+
+### 生产环境配置
+- 数据库连接池优化
+- Redis 缓存配置
+- 日志级别调整
+- 文件上传路径配置
+
+## 📖 API 文档
+
+启动后端服务后，可通过以下地址访问 API 文档：
+- Swagger UI: `http://localhost:8080/swagger-ui/`
+
+主要 API 接口：
+- `GET /product/list` - 获取商品列表
+- `POST /product/create` - 创建商品
+- `POST /product/update/{id}` - 更新商品
+- `POST /product/update/publishStatus` - 批量上下架
+- `GET /product/updateInfo/{id}` - 获取商品编辑信息
+
+## 🤝 贡献指南
+
+1. Fork 本仓库
+2. 创建您的功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 打开一个 Pull Request
+
+## 📄 许可证
+
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+
+## 📞 联系我们
+
+如有问题或建议，请通过以下方式联系：
+- 提交 Issue
+- 发送邮件
+- 加入交流群
+
+## 🎯 路线图
+
+- [ ] 商品导入导出功能
+- [ ] 商品评价管理
+- [ ] 库存预警功能
+- [ ] 数据报表导出
+- [ ] 移动端适配
+- [ ] 多语言支持
+
+---
+
+**感谢您使用商城后台管理系统！** 🎉
