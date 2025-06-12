@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 商品管理Service
@@ -70,4 +72,50 @@ public interface PmsProductService {
      * 根据商品名称或者货号模糊查询
      */
     List<PmsProduct> list(String keyword);
+
+    /**
+     * 根据商品ID获取商品详情
+     */
+    PmsProduct getProduct(Long id);
+
+    /**
+     * 批量复制商品
+     */
+    @Transactional
+    int copyProducts(List<Long> ids);
+
+    /**
+     * 获取库存预警商品列表
+     */
+    List<PmsProduct> getStockWarningList(Integer lowStock, Integer pageSize, Integer pageNum);
+
+    /**
+     * 批量更新商品价格
+     * @param ids 商品ID列表
+     * @param price 价格
+     * @param priceType 价格类型：0->销售价格；1->市场价格
+     */
+    @Transactional
+    int updatePrice(List<Long> ids, BigDecimal price, Integer priceType);
+
+    /**
+     * 获取商品统计信息
+     */
+    Map<String, Object> getProductStatistics();
+
+    /**
+     * 根据分类ID获取商品列表
+     */
+    List<PmsProduct> getProductsByCategory(Long categoryId, Integer pageSize, Integer pageNum);
+
+    /**
+     * 根据品牌ID获取商品列表
+     */
+    List<PmsProduct> getProductsByBrand(Long brandId, Integer pageSize, Integer pageNum);
+
+    /**
+     * 高级搜索商品
+     */
+    List<PmsProduct> advancedSearch(PmsProductQueryParam queryParam, BigDecimal minPrice, BigDecimal maxPrice,
+                                   Integer recommendStatus, Integer newStatus, Integer pageSize, Integer pageNum);
 }

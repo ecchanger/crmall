@@ -12,15 +12,15 @@ import com.macro.mall.model.*;
 import com.macro.mall.service.PmsProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -298,6 +298,177 @@ public class PmsProductServiceImpl implements PmsProductService {
             productExample.or().andDeleteStatusEqualTo(0).andProductSnLike("%" + keyword + "%");
         }
         return productMapper.selectByExample(productExample);
+    }
+
+    @Override
+    public PmsProduct getProduct(Long id) {
+        return productMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public int copyProducts(List<Long> ids) {
+        int count = 0;
+        for (Long id : ids) {
+            PmsProductResult originalProduct = getUpdateInfo(id);
+            if (originalProduct != null) {
+                // 创建新商品参数
+                PmsProductParam newProductParam = new PmsProductParam();
+                BeanUtils.copyProperties(originalProduct, newProductParam);
+
+                // 重置ID和相关信息
+                newProductParam.setId(null);
+                newProductParam.setName(originalProduct.getName() + "_副本");
+                newProductParam.setProductSn(generateNewProductSn(originalProduct.getProductSn()));
+                newProductParam.setSale(0);
+                newProductParam.setPublishStatus(0); // 设为未上架
+
+                // 创建新商品
+                int result = create(newProductParam);
+                if (result > 0) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public List<PmsProduct> getStockWarningList(Integer lowStock, Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageNum, pageSize);
+        PmsProductExample example = new PmsProductExample();
+        PmsProductExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteStatusEqualTo(0);
+        criteria.andStockLessThanOrEqualTo(lowStock);
+        criteria.andPublishStatusEqualTo(1); // 只查询已上架商品
+        example.setOrderByClause("stock asc");
+        return productMapper.selectByExample(example);
+    }
+
+    @Override
+    public int updatePrice(List<Long> ids, BigDecimal price, Integer priceType) {
+        PmsProduct record = new PmsProduct();
+        if (priceType == 0) {
+            record.setPrice(price); // 销售价格
+        } else if (priceType == 1) {
+            record.setOriginalPrice(price); // 市场价格
+        }
+
+        PmsProductExample example = new PmsProductExample();
+        example.createCriteria().andIdIn(ids);
+        return productMapper.updateByExampleSelective(record, example);
+    }
+
+    @Override
+    public Map<String, Object> getProductStatistics() {
+        Map<String, Object> statistics = new HashMap<>();
+
+        // 总商品数
+        PmsProductExample totalExample = new PmsProductExample();
+        totalExample.createCriteria().andDeleteStatusEqualTo(0);
+        long totalCount = productMapper.countByExample(totalExample);
+        statistics.put("totalCount", totalCount);
+
+        // 已上架商品数
+        PmsProductExample publishedExample = new PmsProductExample();
+        publishedExample.createCriteria().andDeleteStatusEqualTo(0).andPublishStatusEqualTo(1);
+        long publishedCount = productMapper.countByExample(publishedExample);
+        statistics.put("publishedCount", publishedCount);
+
+        // 待审核商品数
+        PmsProductExample pendingExample = new PmsProductExample();
+        pendingExample.createCriteria().andDeleteStatusEqualTo(0).andVerifyStatusEqualTo(0);
+        long pendingCount = productMapper.countByExample(pendingExample);
+        statistics.put("pendingCount", pendingCount);
+
+        // 库存预警商品数
+        PmsProductExample lowStockExample = new PmsProductExample();
+        lowStockExample.createCriteria().andDeleteStatusEqualTo(0).andStockLessThanOrEqualTo(10);
+        long lowStockCount = productMapper.countByExample(lowStockExample);
+        statistics.put("lowStockCount", lowStockCount);
+
+        return statistics;
+    }
+
+    @Override
+    public List<PmsProduct> getProductsByCategory(Long categoryId, Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageNum, pageSize);
+        PmsProductExample example = new PmsProductExample();
+        PmsProductExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteStatusEqualTo(0);
+        criteria.andProductCategoryIdEqualTo(categoryId);
+        example.setOrderByClause("sort desc, id desc");
+        return productMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<PmsProduct> getProductsByBrand(Long brandId, Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageNum, pageSize);
+        PmsProductExample example = new PmsProductExample();
+        PmsProductExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteStatusEqualTo(0);
+        criteria.andBrandIdEqualTo(brandId);
+        example.setOrderByClause("sort desc, id desc");
+        return productMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<PmsProduct> advancedSearch(PmsProductQueryParam queryParam, BigDecimal minPrice, BigDecimal maxPrice,
+                                          Integer recommendStatus, Integer newStatus, Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageNum, pageSize);
+        PmsProductExample example = new PmsProductExample();
+        PmsProductExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteStatusEqualTo(0);
+
+        // 基础查询条件
+        if (queryParam.getPublishStatus() != null) {
+            criteria.andPublishStatusEqualTo(queryParam.getPublishStatus());
+        }
+        if (queryParam.getVerifyStatus() != null) {
+            criteria.andVerifyStatusEqualTo(queryParam.getVerifyStatus());
+        }
+        if (!StrUtil.isEmpty(queryParam.getKeyword())) {
+            criteria.andNameLike("%" + queryParam.getKeyword() + "%");
+        }
+        if (!StrUtil.isEmpty(queryParam.getProductSn())) {
+            criteria.andProductSnEqualTo(queryParam.getProductSn());
+        }
+        if (queryParam.getBrandId() != null) {
+            criteria.andBrandIdEqualTo(queryParam.getBrandId());
+        }
+        if (queryParam.getProductCategoryId() != null) {
+            criteria.andProductCategoryIdEqualTo(queryParam.getProductCategoryId());
+        }
+
+        // 价格区间
+        if (minPrice != null) {
+            criteria.andPriceGreaterThanOrEqualTo(minPrice);
+        }
+        if (maxPrice != null) {
+            criteria.andPriceLessThanOrEqualTo(maxPrice);
+        }
+
+        // 推荐状态
+        if (recommendStatus != null) {
+            criteria.andRecommandStatusEqualTo(recommendStatus);
+        }
+
+        // 新品状态
+        if (newStatus != null) {
+            criteria.andNewStatusEqualTo(newStatus);
+        }
+
+        example.setOrderByClause("sort desc, id desc");
+        return productMapper.selectByExample(example);
+    }
+
+    /**
+     * 生成新的商品货号
+     */
+    private String generateNewProductSn(String originalSn) {
+        if (StrUtil.isEmpty(originalSn)) {
+            return "COPY_" + System.currentTimeMillis();
+        }
+        return originalSn + "_COPY_" + System.currentTimeMillis();
     }
 
     /**
