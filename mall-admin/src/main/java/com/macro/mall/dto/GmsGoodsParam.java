@@ -1,5 +1,6 @@
 package com.macro.mall.dto;
 
+import com.macro.mall.validator.FlagValidator;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -65,12 +66,15 @@ public class GmsGoodsParam {
     @ApiModelProperty(value = "排序")
     private Integer sort;
 
+    @FlagValidator(value = {"0", "1"}, message = "上架状态不正确")
     @ApiModelProperty(value = "上架状态：0->下架；1->上架")
     private Integer publishStatus;
 
+    @FlagValidator(value = {"0", "1"}, message = "新品状态不正确")
     @ApiModelProperty(value = "新品状态：0->不是新品；1->新品")
     private Integer newStatus;
 
+    @FlagValidator(value = {"0", "1"}, message = "推荐状态不正确")
     @ApiModelProperty(value = "推荐状态：0->不推荐；1->推荐")
     private Integer recommendStatus;
 

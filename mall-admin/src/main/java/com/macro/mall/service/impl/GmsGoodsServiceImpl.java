@@ -96,7 +96,7 @@ public class GmsGoodsServiceImpl implements GmsGoodsService {
         criteria.andDeleteStatusEqualTo(0);
         if (!StrUtil.isEmpty(keyword)) {
             criteria.andNameLike("%" + keyword + "%");
-            example.or(example.createCriteria().andGoodsSnLike("%" + keyword + "%"));
+            example.or(example.createCriteria().andDeleteStatusEqualTo(0).andGoodsSnLike("%" + keyword + "%"));
         }
         return goodsMapper.selectByExample(example);
     }
